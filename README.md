@@ -1,11 +1,6 @@
-# RxJavaMark
-This is my study RxJava some mark,also I hope it's can help other people,thanks!
-
-
-##RxJava 学习笔记
-
+###RxJava
 ####一.   一些概念
-1. **ObServer** 相当于 OnclickListener，即观察者，有三个回调方法  onError()  onNext() onComplete；
+1. **ObServer（接口）** 相当于 OnclickListener，即观察者，有三个回调方法  onError()  onNext() onComplete；
 
 	**ObServerble** 相当于View ，即被观察者；
 		
@@ -17,13 +12,10 @@ This is my study RxJava some mark,also I hope it's can help other people,thanks!
   
   **Subscription**  是一个接口，Subscriber实现了它
 
-
-
 ####二. 一些接口
 1. **from(T[])** **just(T...)** obServable可以直接像这样去创建：Observable.from()  或者  ObServable.just()，这种创建方式等价于Observable.create()方式，只是传参方式不同；
 2. **Action0 Action1**  Action0 是 RxJava 的一个接口，它只有一个方法 call()，这个方法是无参无返回值的；由于 onCompleted() 方法也是无参无返回值的，因此 Action0 可以被当成一个包装对象，将 onCompleted() 的内容打包起来将自己作为一个参数传入 subscribe() 以实现不完整定义的回调。这样其实也可以看做将 onCompleted() 方法作为参数传进了 subscribe()，相当于其他某些语言中的『闭包』。 
-
-
+3. **Func1<String,Bitmap>** 和Action1非常相似，也是一个接口，但区别在于，Func1是有返回值的，和ActionX一样，FuncX也有多个，用于不同的参数个数。
 
 ####三. 线程控制
 RxJava内置有以下几个线程
@@ -55,5 +47,18 @@ RxJava内置有以下几个线程
 
 ####四. 转换
 
-
+1. **map** 将传进来的参数，以另一种对象返回，代码示例
+             
+             Observable.just("images/logo.png") 
+              .map(new Func1<String, Bitmap>() {
+	       @Override
+	        public Bitmap call(String filePath) { // 参数类型 String
+	            return getBitmapFromPath(filePath); // 返回类型 Bitmap
+	        } }) 
+        .subscribe(new Action1<Bitmap>() {
+	        @Override
+	        public void call(Bitmap bitmap) { // 参数类型 Bitmap
+	            showBitmap(bitmap);
+	        } });
+2. **FlatMap** ：1. 使用传入的事件对象创建一个 Observable 对象；2. 并不发送这个 Observable, 而是将它激活，于是它开始发送事件；3. 每一个创建出来的 Observable 发送的事件，都被汇入同一个 Observable ，而这个 Observable 负责将这些事件统一交给 Subscriber 的回调方法。这三个步骤，把事件拆成了两级，通过一组新创建的 Observable 将初始的对象『铺平』之后通过统一路径分发了下去。而这个『铺平』就是 flatMap() 所谓的 flat。
 
